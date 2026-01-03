@@ -6,12 +6,12 @@ public final class OriginAscendants extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        // Plugin startup logic
+        getLogger().info("Origins Ascendants plugin loaded.");
 
     }
 
     @Override
     public void onDisable() {
-        // Plugin shutdown logic
+        getLogger().info("Origins Ascendants plugin unloaded.");
     }
 }
