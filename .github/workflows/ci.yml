@@ -20,9 +20,16 @@ jobs:
           distribution: 'temurin'
           java-version: '21'
 
-      - name: Run Gradle Check
+      - name: Run Gradle Build
         uses: gradle/gradle-build-action@v2
         with:
-          arguments: check
+          arguments: build
           # enable cache to speed up builds
           cache-enabled: true
+
+      - name: Upload build artifact (JAR)
+        uses: actions/upload-artifact@v4
+        with:
+          name: originascendants-jar
+          path: build/libs/*.jar
+          retention-days: 7
