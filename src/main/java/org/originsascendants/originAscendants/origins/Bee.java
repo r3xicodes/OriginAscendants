@@ -1,0 +1,56 @@
+package org.originsascendants.originAscendants.origins;
+
+import net.kyori.adventure.text.Component;
+import org.originsascendants.originAscendants.gui.AbilityDoc;
+import org.originsascendants.originAscendants.player.PlayerState;
+import org.bukkit.entity.Player;
+
+@SuppressWarnings("unused")
+public class Bee extends Origin {
+
+    private boolean toggleState = false;
+    private double charge = 0.00;
+    private boolean isCharging = false;
+    private int primaryCooldown=10;
+    private int secondaryCooldown=10;
+    private int primaryCooldownCounter=10;
+    private int secondaryCooldownCounter=10;
+
+    public Bee(PlayerState state) {
+        super(state);
+        this.primaryAbilityDoc = new AbilityDoc("Pollinate", "Bonemeal nearby saplings and harvest honey/flowers.");
+        this.secondaryAbilityDoc = new AbilityDoc("Final Sting", "1% chance to deal massive damage at cost of health (toggle).");
+        this.crouchAbilityDoc = new AbilityDoc("Buzz Away", "Crouching grants levitation and swiftsneak speed.");
+    }
+
+    private void abilityMessage(String msg) {
+        Player p = state.toBukkit();
+        p.sendActionBar(Component.text(msg));
+    }
+
+    @Override
+    public void tick() {
+        if (primaryCooldownCounter < primaryCooldown) primaryCooldownCounter += 1;
+        if (secondaryCooldownCounter < secondaryCooldown) secondaryCooldownCounter += 1;
+    }
+
+    @Override
+    public void primaryAbility() {
+        abilityMessage("Pollinate activated.");
+    }
+
+    @Override
+    public void crouchOff() {
+        isCharging = false;
+    }
+
+    @Override
+    public void secondaryAbility() {
+        abilityMessage("Final Sting toggled.");
+    }
+
+    @Override
+    public void crouchOn() {
+        abilityMessage("Buzz Away: levitation effect (not actually applied). Implement potion effect later if desired.");
+    }
+}

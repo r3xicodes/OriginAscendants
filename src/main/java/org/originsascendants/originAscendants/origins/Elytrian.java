@@ -1,14 +1,12 @@
 package org.originsascendants.originAscendants.origins;
 
 import net.kyori.adventure.text.Component;
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.util.Vector;
 import org.originsascendants.originAscendants.gui.AbilityDoc;
-import org.originsascendants.originAscendants.origins.Origin;
 import org.originsascendants.originAscendants.player.*;
 
 public class Elytrian extends Origin {
@@ -114,7 +112,8 @@ public class Elytrian extends Origin {
             return;
         }
         if (wingsFolded) {
-            if (p.getInventory().getChestplate().getType()!=Material.AIR) {
+            org.bukkit.inventory.ItemStack chest = p.getInventory().getChestplate();
+            if (chest != null && chest.getType() != Material.AIR) {
                 p.sendActionBar(Component.text("Your armor restricts your wings..."));
                 return;
             } else {

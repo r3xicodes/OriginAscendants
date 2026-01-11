@@ -1,0 +1,114 @@
+Alchemist
+General Stats
+The child of a village Librarian and a witch. Specializes in enchanting potions and explosives.
+Primary: Arcane Analysis — manipulate enchanting outcomes and gain insights from magic.
+Crouch: Arcane Shield — generate a temporary shield at the cost of experience.
+Difficulty / Complexity: 4
+
+Arachnid
+General Stats
+Eight-legged web weaver. Excellent at climbing and setting traps.
+Excels at vertical movement and can tether enemies with silk-like traps.
+Difficulty / Complexity: 2
+
+Bee
+General Stats
+Pollination specialist — faster movement among flowers and honey crafting perks.
+Can interact with hives and craft enhanced honey-based items for allies.
+Difficulty / Complexity: 2
+
+Blazeborn
+General Stats
+Forged in flame and embers. Resistant to heat and able to manipulate fire bursts for offense and mobility.
+Often gains short-lived flame bursts that propel and damage foes.
+Difficulty / Complexity: 3
+
+Elytrian
+General Stats
+Light-as-air gliders with enhanced mobility; excels at short flights and swift maneuvers.
+Gliding and quick dashes make them excellent scouts and skirmishers.
+Difficulty / Complexity: 4
+
+Fairy
+General Stats
+Tiny, clever, and community-oriented. Exceptional at building, giving subtle buffs, and assisting teammates.
+Has gentle flight assistance and environment-enhancing effects.
+Difficulty / Complexity: 4
+
+Huntsman
+General Stats
+A marksman and tracker who specializes in ranged combat, traps, and precision shots.
+Expert at single-target elimination and long-range control.
+Difficulty / Complexity: 3
+
+Merling
+General Stats
+An amphibious origin that breathes easily underwater and commands subtle currents and marine allies.
+Thrives in water; gains movement and perception bonuses while submerged.
+Difficulty / Complexity: 3
+
+Phantom
+General Stats
+A nocturnal, gliding hunter who strikes from above and vanishes in shadows.
+Strikes are swift and often leave foes disoriented and vulnerable.
+Difficulty / Complexity: 3
+
+Phytokin
+General Stats
+Plant-bonded entity — strong in nature-based tactics and healing flora.
+Can manipulate nearby plants and gain camouflaging benefits in vegetation.
+Difficulty / Complexity: 3
+
+Pawsworn
+General Stats
+Agile brawler with enhanced melee speed and specialized paw-based abilities.
+Swift close-combat attacks and increased mobility on varied terrain.
+Difficulty / Complexity: 2
+
+Shulk
+General Stats
+Displacer with short-range teleports and shulker-inspired defensive mechanics.
+Uses short teleports to reposition and avoid damage, favoring hit-and-run play.
+Difficulty / Complexity: 3
+
+Werewolf
+General Stats
+A feral shapeshifter who can transform into a wolf form under certain conditions.
+Human form gains heightened senses and tracking instincts; wolf form gains speed and powerful bite attacks.
+Transformation is tied to conditions and abilities.
+Difficulty / Complexity: 4
+
+Human
+General Stats
+Versatile mortal — balanced stats representing default play.
+A good starting point for players who prefer straightforward mechanics.
+Difficulty / Complexity: 1
+
+Breezeborn
+General Stats
+Elemental-born of wind and speed, capable of short air bursts and graceful maneuvers.
+Difficulty / Complexity: 3
+
+Bunny
+General Stats
+Small and nimble, excels at hopping, rapid dodge maneuvers, and quick escapes.
+Difficulty / Complexity: 2
+
+Skulkborn
+General Stats
+Mysterious and stealthy; gains sensory bonuses and unique interactions with sculk structures.
+Difficulty / Complexity: 3
+
+Undead
+General Stats
+A revenant-like origin with resistances to some damage types and unique sunlight interactions.
+Difficulty / Complexity: 3
+
+Chicken
+General Stats
+Lightweight and nimble; provides unique clutch-based mechanics and egg interactions.
+Difficulty / Complexity: 1
+Vampire
+General Stats
+Night-bound and predatory: gains strength in darkness and unique life-steal mechanics.
+Difficulty / Complexity: 4

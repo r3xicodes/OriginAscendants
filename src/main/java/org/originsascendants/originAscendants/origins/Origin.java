@@ -19,14 +19,14 @@ public abstract class Origin {
     }
 
     //tick logic (aka passive logic)
-    public void tick(){};
+    public void tick(){}
 
     // Handled automatically
-    public void primaryAbility(){};
-    public void secondaryAbility(){};
+    public void primaryAbility(){}
+    public void secondaryAbility(){}
 
     // Executes on crouch
-    public void crouchOn(){};
+    public void crouchOn(){}
     // Executes on crouch release
     public void crouchOff(){}
 }

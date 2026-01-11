@@ -1,11 +1,7 @@
 package org.originsascendants.originAscendants;
 
 import org.bukkit.Bukkit;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.java.JavaPlugin;
-import java.util.UUID;
-import org.originsascendants.originAscendants.origins.*;
 import org.originsascendants.originAscendants.player.*;
 public final class OriginAscendants extends JavaPlugin {
 

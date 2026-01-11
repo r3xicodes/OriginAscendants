@@ -3,16 +3,12 @@ package org.originsascendants.originAscendants;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerSwapHandItemsEvent;
 import org.bukkit.event.player.PlayerToggleSneakEvent;
 import org.originsascendants.originAscendants.player.PlayerRegistry;
 import org.originsascendants.originAscendants.player.PlayerState;
 
 public class AbilityListener implements Listener {
-
-    public boolean sneak = false;
-    public boolean swap = false;
 
     @EventHandler
     public void onSwap(PlayerSwapHandItemsEvent e) {
