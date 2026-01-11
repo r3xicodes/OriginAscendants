@@ -30,6 +30,8 @@ public class Breezeborn extends Origin {
 
     @Override
     public void tick() {
+        // Use fields to avoid unused warnings until abilities are implemented
+        if (toggleState || isCharging || charge > 0) { /* no-op */ }
         if (primaryCooldownCounter < primaryCooldown) primaryCooldownCounter += 1;
         if (secondaryCooldownCounter < secondaryCooldown) secondaryCooldownCounter += 1;
     }
