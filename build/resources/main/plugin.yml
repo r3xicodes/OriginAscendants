@@ -1,0 +1,9 @@
+name: OriginAscendants
+version: '1.0-SNAPSHOT'
+main: org.originsascendants.originAscendants.OriginAscendants
+api-version: '1.21'
+commands:
+  setorigin:
+    description: "Sets a player's origin"
+    usage: "/setorigin <player> <origin>"
+    permission: "originascendants.setorigin"

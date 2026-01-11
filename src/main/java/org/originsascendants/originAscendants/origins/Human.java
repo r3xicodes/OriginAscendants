@@ -1,13 +1,9 @@
 package org.originsascendants.originAscendants.origins;
 
 import net.kyori.adventure.text.Component;
-import net.md_5.bungee.api.ChatMessageType;
-import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.entity.Player;
-import org.checkerframework.checker.units.qual.A;
 import org.originsascendants.originAscendants.gui.AbilityDoc;
 import org.originsascendants.originAscendants.player.PlayerState;
-import org.originsascendants.originAscendants.player.PlayerRegistry;
 
 public class Human extends Origin{
     protected Human(PlayerState state) {

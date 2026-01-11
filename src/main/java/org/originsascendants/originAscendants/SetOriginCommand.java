@@ -31,9 +31,11 @@ public class SetOriginCommand implements CommandExecutor {
             return true;
         }
 
-        Origin origin = OriginFactory.createOrigin(originType, state);
-        if (origin == null) {
-            sender.sendMessage("Unknown origin type.");
+        Origin origin;
+        try {
+            origin = OriginFactory.createOrigin(originType, state);
+        } catch (IllegalArgumentException ex) {
+            sender.sendMessage("Unknown origin type: "+originType);
             return true;
         }
         state.setOrigin(origin);

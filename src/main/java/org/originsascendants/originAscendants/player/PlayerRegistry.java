@@ -27,10 +27,6 @@ public final class PlayerRegistry {
     }
 
     public static boolean exists(UUID uuid) {
-        if (players.containsKey(uuid)) {
-            return true;
-        } else {
-            return false;
-        }
+        return players.containsKey(uuid);
     }
 }
