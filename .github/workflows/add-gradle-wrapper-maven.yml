@@ -1,0 +1,31 @@
+name: Add Gradle Wrapper Jar (Maven Central)
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  add-wrapper:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+
+      - name: Download gradle-wrapper jar from Maven Central
+        run: |
+          mkdir -p gradle/wrapper
+          curl -fsSL -o gradle/wrapper/gradle-wrapper.jar https://repo1.maven.org/maven2/org/gradle/gradle-wrapper/8.8/gradle-wrapper-8.8.jar
+          ls -l gradle/wrapper/gradle-wrapper.jar
+
+      - name: Commit and push wrapper jar
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add gradle/wrapper/gradle-wrapper.jar
+          git commit -m "chore(ci): add gradle-wrapper.jar (from Maven Central)" || echo "No changes to commit"
+          git push
