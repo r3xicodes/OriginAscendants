@@ -27,8 +27,11 @@ public class SetOriginCommand implements CommandExecutor {
 
         PlayerState state = PlayerRegistry.getPlayerFromUUID(p.getUniqueId());
         if (state == null) {
-            sender.sendMessage("Player has no PlayerState.");
-            return true;
+            // If the player somehow lacks a PlayerState (e.g., plugin loaded while they were online), create one.
+            state = new PlayerState(p.getUniqueId());
+            state.setOrigin(OriginFactory.createOrigin("HUMAN", state));
+            PlayerRegistry.registerPlayer(state);
+            sender.sendMessage("Created PlayerState for " + playerName + " and set default origin.");
         }
 
         Origin origin;

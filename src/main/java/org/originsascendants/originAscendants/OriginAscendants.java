@@ -3,6 +3,7 @@ package org.originsascendants.originAscendants;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.originsascendants.originAscendants.player.*;
+import org.originsascendants.originAscendants.origins.OriginFactory;
 public final class OriginAscendants extends JavaPlugin {
 
     @Override
@@ -16,6 +17,17 @@ public final class OriginAscendants extends JavaPlugin {
 
         this.getCommand("setorigin").setExecutor(new SetOriginCommand());
         getLogger().info("Loaded setorigin command");
+
+        // Ensure all players currently online have a PlayerState (useful when plugin reloads)
+        for (org.bukkit.entity.Player online : Bukkit.getOnlinePlayers()) {
+            java.util.UUID uuid = online.getUniqueId();
+            if (!PlayerRegistry.exists(uuid)) {
+                PlayerState st = new PlayerState(uuid);
+                st.setOrigin(OriginFactory.createOrigin("HUMAN", st));
+                PlayerRegistry.registerPlayer(st);
+                getLogger().info("Registered PlayerState for online player " + online.getName());
+            }
+        }
 
         Bukkit.getScheduler().runTaskTimer(this, ()->{
             for(PlayerState state : PlayerRegistry.getAllPlayerStates()) {
