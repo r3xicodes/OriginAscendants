@@ -20,6 +20,23 @@ jobs:
           distribution: 'temurin'
           java-version: '21'
 
+      - name: Diagnostic: print Java & env
+        run: |
+          echo "=== java -version ==="
+          java -version || true
+          echo
+          echo "=== ./gradlew -v (if present) ==="
+          if [ -x ./gradlew ]; then ./gradlew -v || true; else echo "no ./gradlew executable"; fi
+          echo
+          echo "=== ls -la workspace ==="
+          ls -la || true
+          echo
+          echo "=== selected env vars ==="
+          echo "JAVA_HOME=$JAVA_HOME"
+          echo "GITHUB_WORKSPACE=$GITHUB_WORKSPACE"
+          echo "RUNNER_OS=$RUNNER_OS"
+          echo "GRADLE_USER_HOME=$GRADLE_USER_HOME"
+          echo "PATH length=${#PATH}"
       - name: Run Gradle Build
         uses: gradle/gradle-build-action@v2
         with:
