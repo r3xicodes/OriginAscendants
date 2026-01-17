@@ -29,4 +29,8 @@ public final class PlayerRegistry {
     public static boolean exists(UUID uuid) {
         return players.containsKey(uuid);
     }
+
+    public static void clearAll() {
+        players.clear();
+    }
 }
