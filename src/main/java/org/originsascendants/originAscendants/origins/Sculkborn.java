@@ -4,6 +4,7 @@ import net.kyori.adventure.text.Component;
 import org.originsascendants.originAscendants.gui.AbilityDoc;
 import org.originsascendants.originAscendants.player.PlayerState;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.LivingEntity;
 
 @SuppressWarnings("unused")
 public class Sculkborn extends Origin {

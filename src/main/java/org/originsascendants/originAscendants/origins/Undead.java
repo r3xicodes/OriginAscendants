@@ -21,13 +21,19 @@ public class Undead extends Origin {
     public void primaryAbility() {
         Player p = state.toBukkit();
         if (!isPrimaryReady()) return;
-        var target = p.rayTraceEntities(8, entity -> entity instanceof LivingEntity && !(entity instanceof Player));
-        if (target != null && target.getHitEntity() instanceof LivingEntity le) {
-            le.damage(3.0);
-            le.addPotionEffect(new org.bukkit.potion.PotionEffect(org.bukkit.potion.PotionEffectType.POISON, 80, 1, false, false));
-            p.sendActionBar(Component.text("Infectious bite!"));
-            resetPrimaryCooldown();
-        } else {
+        var targets = p.getWorld().getNearbyLivingEntities(p.getLocation(), 8);
+        boolean hit = false;
+        for (LivingEntity target : targets) {
+            if (!(target instanceof Player) && target != p) {
+                target.damage(3.0);
+                target.addPotionEffect(new org.bukkit.potion.PotionEffect(org.bukkit.potion.PotionEffectType.POISON, 80, 1, false, false));
+                p.sendActionBar(Component.text("Infectious bite!"));
+                resetPrimaryCooldown();
+                hit = true;
+                break;
+            }
+        }
+        if (!hit) {
             p.sendActionBar(Component.text("No target"));
         }
     }

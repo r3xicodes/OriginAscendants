@@ -12,7 +12,6 @@ public class Arachnid extends Origin {
 
     public Arachnid(PlayerState state) {
         super(state);
-        this.health = 20;
         this.primaryCooldown = 10;
         this.secondaryCooldown = 5;
         this.primaryAbilityDoc = new AbilityDoc("Climb", "Toggle climbing.");

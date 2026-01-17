@@ -4,6 +4,7 @@ import net.kyori.adventure.text.Component;
 import org.originsascendants.originAscendants.gui.AbilityDoc;
 import org.originsascendants.originAscendants.player.PlayerState;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.LivingEntity;
 
 @SuppressWarnings("unused")
 public class Vampire extends Origin {
@@ -20,14 +21,20 @@ public class Vampire extends Origin {
     public void primaryAbility() {
         Player p = state.toBukkit();
         if (!isPrimaryReady()) return;
-        var target = p.rayTraceEntities(40, entity -> entity instanceof LivingEntity && !(entity instanceof Player));
-        if (target != null && target.getHitEntity() instanceof LivingEntity le) {
-            double damage = 4.0;
-            le.damage(damage);
-            p.setHealth(Math.min(p.getHealth() + damage, p.getMaxHealth()));
-            p.sendActionBar(Component.text("Drained!"));
-            resetPrimaryCooldown();
-        } else {
+        var targets = p.getWorld().getNearbyLivingEntities(p.getLocation(), 40);
+        boolean hit = false;
+        for (LivingEntity target : targets) {
+            if (!(target instanceof Player) && target != p) {
+                double damage = 4.0;
+                target.damage(damage);
+                p.setHealth(Math.min(p.getHealth() + damage, p.getMaxHealth()));
+                p.sendActionBar(Component.text("Drained!"));
+                resetPrimaryCooldown();
+                hit = true;
+                break;
+            }
+        }
+        if (!hit) {
             p.sendActionBar(Component.text("No target"));
         }
     }

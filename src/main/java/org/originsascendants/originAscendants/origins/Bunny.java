@@ -12,7 +12,7 @@ public class Bunny extends Origin {
 
     public Bunny(PlayerState state) {
         super(state);
-        this.health = 18;
+
         this.primaryCooldown = 15;
         this.secondaryCooldown = 25;
         this.primaryAbilityDoc = new AbilityDoc("Charge Jump", "Hold to charge, release to jump high.");

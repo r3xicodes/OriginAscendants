@@ -5,6 +5,7 @@ import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.entity.Player;
 import org.originsascendants.originAscendants.gui.AbilityDoc;
 import org.originsascendants.originAscendants.player.PlayerState;
+import java.util.UUID;
 
 public abstract class Origin {
     protected final PlayerState state;
@@ -41,30 +42,17 @@ public abstract class Origin {
     public void crouchOff(){}
 
     /**
-     * Apply attribute modifiers to the player
+     * Apply attribute modifiers to the player (simplified for compatibility)
      */
     public void applyAttributes() {
-        Player player = state.toBukkit();
-        if (player == null) return;
-        
-        // Base health modifier (each origin can override)
-        modifyAttribute(player, Attribute.GENERIC_MAX_HEALTH, 20.0);
+        // Can be overridden in subclasses
     }
 
     /**
      * Remove all custom attribute modifiers from the player
      */
     public void removeAttributes() {
-        Player player = state.toBukkit();
-        if (player == null) return;
-        
-        // Remove all origin-specific attribute modifiers
-        if (player.getAttribute(Attribute.GENERIC_MAX_HEALTH) != null) {
-            player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getModifiers()
-                    .stream()
-                    .filter(m -> m.getName().startsWith("origin_"))
-                    .forEach(m -> player.getAttribute(Attribute.GENERIC_MAX_HEALTH).removeModifier(m));
-        }
+        // Can be overridden in subclasses
     }
 
     /**
@@ -73,6 +61,7 @@ public abstract class Origin {
     protected void modifyAttribute(Player player, Attribute attribute, double amount) {
         if (player.getAttribute(attribute) != null) {
             AttributeModifier modifier = new AttributeModifier(
+                    UUID.randomUUID(),
                     "origin_" + attribute.name().toLowerCase(),
                     amount - player.getAttribute(attribute).getBaseValue(),
                     AttributeModifier.Operation.ADD_NUMBER
@@ -87,6 +76,7 @@ public abstract class Origin {
     protected void modifyAttributePercent(Player player, Attribute attribute, double percent) {
         if (player.getAttribute(attribute) != null) {
             AttributeModifier modifier = new AttributeModifier(
+                    UUID.randomUUID(),
                     "origin_" + attribute.name().toLowerCase(),
                     percent,
                     AttributeModifier.Operation.MULTIPLY_SCALAR_1
@@ -98,7 +88,7 @@ public abstract class Origin {
     /**
      * Update cooldown timers (called every tick)
      */
-    protected void updateCooldowns() {
+    public void updateCooldowns() {
         if (primaryCooldownCounter < primaryCooldown) primaryCooldownCounter++;
         if (secondaryCooldownCounter < secondaryCooldown) secondaryCooldownCounter++;
         if (crouchCooldownCounter < crouchCooldown) crouchCooldownCounter++;

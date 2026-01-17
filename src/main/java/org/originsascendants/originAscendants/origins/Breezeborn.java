@@ -21,7 +21,7 @@ public class Breezeborn extends Origin {
         Player p = state.toBukkit();
         if (!isPrimaryReady()) return;
         org.bukkit.entity.Projectile projectile = p.getWorld().spawn(p.getEyeLocation(), org.bukkit.entity.Fireball.class, fb -> {
-            fb.setVelocity(p.getDirection().multiply(2.0));
+            fb.setVelocity(p.getLocation().getDirection().multiply(2.0));
             fb.setShooter(p);
             fb.setYield(0.1f);
         });

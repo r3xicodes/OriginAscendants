@@ -12,7 +12,7 @@ public class Huntsman extends Origin {
 
     public Huntsman(PlayerState state) {
         super(state);
-        this.health = 20;
+
         this.primaryCooldown = 30;
         this.secondaryCooldown = 10;
         this.primaryAbilityDoc = new AbilityDoc("Precision", "Turn invisible and shoot arrow.");
@@ -47,17 +47,8 @@ public class Huntsman extends Origin {
     @Override
     public void crouchOn() {
     }
-}
-        abilityMessage("Tip changed.");
-    }
 
     @Override
-    public void crouchOn() {
-        abilityMessage("Stalk active.");
-    }
-
-    @Override
-    public void crouchOff() {
-        isCharging = false;
+    public void tick() {
     }
 } 

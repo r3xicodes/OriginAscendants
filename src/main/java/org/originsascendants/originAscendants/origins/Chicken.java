@@ -1,7 +1,6 @@
 package org.originsascendants.originAscendants.origins;
 
 import net.kyori.adventure.text.Component;
-import org.bukkit.entity.Chicken;
 import org.bukkit.entity.Player;
 import org.originsascendants.originAscendants.gui.AbilityDoc;
 import org.originsascendants.originAscendants.player.PlayerState;
@@ -26,9 +25,8 @@ public class Chicken extends Origin {
         }
         
         // Spawn a chicken at player location
-        Chicken chicken = p.getWorld().spawn(p.getLocation().add(0, 1, 0), Chicken.class);
+        org.bukkit.entity.Chicken chicken = p.getWorld().spawn(p.getLocation().add(0, 1, 0), org.bukkit.entity.Chicken.class);
         chicken.setAge(-1200); // Baby chicken
-        chicken.setBaby(true);
         p.sendActionBar(Component.text("Chick summoned!"));
         resetPrimaryCooldown();
     }
@@ -46,8 +44,16 @@ public class Chicken extends Origin {
         p.sendActionBar(Component.text("Egg tossed!"));
         resetSecondaryCooldown();
     }
-}
 
-        abilityMessage("Flutter active.");
+    @Override
+    public void tick() {
+    }
+
+    @Override
+    public void crouchOff() {
+    }
+
+    @Override
+    public void crouchOn() {
     }
 }

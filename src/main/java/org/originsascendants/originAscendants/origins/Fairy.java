@@ -12,7 +12,6 @@ public class Fairy extends Origin {
 
     public Fairy(PlayerState state) {
         super(state);
-        this.health = 16;
         this.primaryCooldown = 10;
         this.secondaryCooldown = 20;
         this.primaryAbilityDoc = new AbilityDoc("Energize", "Buff nearby players.");

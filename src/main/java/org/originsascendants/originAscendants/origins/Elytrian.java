@@ -19,7 +19,7 @@ public class Elytrian extends Origin {
 
     public Elytrian(PlayerState state) {
         super(state);
-        this.health = 20;
+
         this.primaryCooldown = 10;
         this.secondaryCooldown = 20;
         this.crouchCooldown = 5;

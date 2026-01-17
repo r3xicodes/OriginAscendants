@@ -10,7 +10,7 @@ public class Enderian extends Origin {
 
     public Enderian(PlayerState state) {
         super(state);
-        this.health = 20;
+
         this.primaryCooldown = 20;
         this.secondaryCooldown = 40;
         this.primaryAbilityDoc = new AbilityDoc("Blink", "Teleport short distance in the direction you're looking.");
@@ -46,7 +46,16 @@ public class Enderian extends Origin {
             resetSecondaryCooldown();
         }
     }
-}
-        isCharging = false;
+
+    @Override
+    public void tick() {
+    }
+
+    @Override
+    public void crouchOff() {
+    }
+
+    @Override
+    public void crouchOn() {
     }
 }

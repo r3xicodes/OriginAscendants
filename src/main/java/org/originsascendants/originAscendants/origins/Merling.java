@@ -49,23 +49,14 @@ public class Merling extends Origin {
     }
 
     @Override
+    public void tick() {
+    }
+
+    @Override
     public void crouchOff() {
     }
 
     @Override
     public void crouchOn() {
-    }
-}
-        isCharging = false;
-    }
-
-    @Override
-    public void secondaryAbility() {
-        abilityMessage("Current used.");
-    }
-
-    @Override
-    public void crouchOn() {
-        abilityMessage("Breath Control engaged.");
     }
 }
