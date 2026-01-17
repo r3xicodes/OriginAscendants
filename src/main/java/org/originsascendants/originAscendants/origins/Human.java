@@ -6,7 +6,7 @@ import org.originsascendants.originAscendants.gui.AbilityDoc;
 import org.originsascendants.originAscendants.player.PlayerState;
 
 public class Human extends Origin{
-    protected Human(PlayerState state) {
+    public Human(PlayerState state) {
         super(state);
 
         // Set up GUI stuff
