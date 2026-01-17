@@ -8,41 +8,36 @@ import org.bukkit.entity.Player;
 @SuppressWarnings("unused")
 public class Arachnid extends Origin {
 
-    private boolean toggleState = false;
-    private double charge = 0.00;
-    private boolean isCharging = false;
-    private int primaryCooldown=10;
-    private int secondaryCooldown=10;
-    private int primaryCooldownCounter=10;
-    private int secondaryCooldownCounter=10;
+    private boolean climbing = false;
 
     public Arachnid(PlayerState state) {
         super(state);
-        this.primaryAbilityDoc = new AbilityDoc("None", "No primary ability.");
-        this.secondaryAbilityDoc = new AbilityDoc("Toggle Climb", "Toggle climbing on walls.");
-        this.crouchAbilityDoc = new AbilityDoc("Predator", "Passives: you only eat meat; nocturnal bonuses.");
-    }
-
-    private void abilityMessage(String msg) {
-        Player p = state.toBukkit();
-        p.sendActionBar(Component.text(msg));
+        this.health = 20;
+        this.primaryCooldown = 10;
+        this.secondaryCooldown = 5;
+        this.primaryAbilityDoc = new AbilityDoc("Climb", "Toggle climbing.");
+        this.secondaryAbilityDoc = new AbilityDoc("Web Sling", "Launch upward.");
     }
 
     @Override
-    public void tick() {
-        // Use fields to avoid unused warnings until abilities are implemented
-        if (toggleState || isCharging || charge > 0) { /* no-op */ }
-        if (primaryCooldownCounter < primaryCooldown) primaryCooldownCounter += 1;
-        if (secondaryCooldownCounter < secondaryCooldown) secondaryCooldownCounter += 1;
+    public void primaryAbility() {
+        Player p = state.toBukkit();
+        if (!isPrimaryReady()) return;
+        climbing = !climbing;
+        p.sendActionBar(Component.text("Climb: " + (climbing ? "ON" : "OFF")));
+        resetPrimaryCooldown();
     }
 
     @Override
     public void secondaryAbility() {
-        abilityMessage("Toggled climbing (not implemented beyond message). If you want wall-climb, implement in the GUI or movement listeners.");
+        Player p = state.toBukkit();
+        if (!isSecondaryReady()) return;
+        p.setVelocity(p.getVelocity().add(new org.bukkit.util.Vector(0, 2, 0)));
+        p.sendActionBar(Component.text("Web slung!"));
+        resetSecondaryCooldown();
     }
 
     @Override
     public void crouchOff() {
-        isCharging = false;
     }
 }

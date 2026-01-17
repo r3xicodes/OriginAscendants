@@ -8,41 +8,46 @@ import org.bukkit.entity.Player;
 @SuppressWarnings("unused")
 public class Huntsman extends Origin {
 
-    private boolean toggleState = false;
-    private double charge = 0.00;
-    private boolean isCharging = false;
-    private int primaryCooldown=10;
-    private int secondaryCooldown=10;
-    private int primaryCooldownCounter=10;
-    private int secondaryCooldownCounter=10;
+    private int arrowTip = 0; // 0=standard, 1=buff, 2=stun
 
     public Huntsman(PlayerState state) {
         super(state);
-        this.primaryAbilityDoc = new AbilityDoc("Precision", "Turn invisible and shoot a lethal arrow.");
-        this.secondaryAbilityDoc = new AbilityDoc("Change Tip", "Change arrow tip behavior (buffing/stun/etc).");
-        this.crouchAbilityDoc = new AbilityDoc("Stalk", "Crouching grants invisibility and safe fall.");
-    }
-
-    private void abilityMessage(String msg) {
-        Player p = state.toBukkit();
-        p.sendActionBar(Component.text(msg));
-    }
-
-    @Override
-    public void tick() {
-        // Use fields to avoid unused warnings until abilities are implemented
-        if (toggleState || isCharging || charge > 0) { /* no-op */ }
-        if (primaryCooldownCounter < primaryCooldown) primaryCooldownCounter += 1;
-        if (secondaryCooldownCounter < secondaryCooldown) secondaryCooldownCounter += 1;
+        this.health = 20;
+        this.primaryCooldown = 30;
+        this.secondaryCooldown = 10;
+        this.primaryAbilityDoc = new AbilityDoc("Precision", "Turn invisible and shoot arrow.");
+        this.secondaryAbilityDoc = new AbilityDoc("Change Tip", "Cycle arrow tip types.");
     }
 
     @Override
     public void primaryAbility() {
-        abilityMessage("Precision activated (invisibility+shot).");
+        Player p = state.toBukkit();
+        if (!isPrimaryReady()) return;
+        p.addPotionEffect(new org.bukkit.potion.PotionEffect(org.bukkit.potion.PotionEffectType.INVISIBILITY, 40, 0));
+        org.bukkit.entity.Arrow arrow = p.getWorld().spawnArrow(p.getEyeLocation(), p.getLocation().getDirection(), 2f, 0);
+        arrow.setDamage(10);
+        p.sendActionBar(Component.text("Precision shot!"));
+        resetPrimaryCooldown();
     }
 
     @Override
     public void secondaryAbility() {
+        Player p = state.toBukkit();
+        if (!isSecondaryReady()) return;
+        arrowTip = (arrowTip + 1) % 3;
+        String[] tips = {"Standard", "Healing", "Stun"};
+        p.sendActionBar(Component.text("Arrow tip: " + tips[arrowTip]));
+        resetSecondaryCooldown();
+    }
+
+    @Override
+    public void crouchOff() {
+    }
+
+    @Override
+    public void crouchOn() {
+    }
+}
         abilityMessage("Tip changed.");
     }
 

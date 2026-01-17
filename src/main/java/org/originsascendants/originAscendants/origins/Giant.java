@@ -8,46 +8,58 @@ import org.bukkit.entity.Player;
 @SuppressWarnings("unused")
 public class Giant extends Origin {
 
-    private boolean toggleState = false;
-    private double charge = 0.00;
-    private boolean isCharging = false;
-    private int primaryCooldown=10;
-    private int secondaryCooldown=10;
-    private int primaryCooldownCounter=10;
-    private int secondaryCooldownCounter=10;
+    private boolean enlarged = false;
 
     public Giant(PlayerState state) {
         super(state);
-        this.primaryAbilityDoc = new AbilityDoc("Roar", "Stun enemies and embolden allies.");
-        this.secondaryAbilityDoc = new AbilityDoc("Enlarge", "Grow larger and stronger (toggle with cooldown).");
-        this.crouchAbilityDoc = new AbilityDoc("Big Boned", "Passive: more health and strength.");
-    }
-
-    private void abilityMessage(String msg) {
-        Player p = state.toBukkit();
-        p.sendActionBar(Component.text(msg));
-    }
-
-    @Override
-    public void tick() {
-        // Use fields to avoid unused warnings until abilities are implemented
-        if (toggleState || isCharging || charge > 0) { /* no-op */ }
-        if (primaryCooldownCounter < primaryCooldown) primaryCooldownCounter += 1;
-        if (secondaryCooldownCounter < secondaryCooldown) secondaryCooldownCounter += 1;
+        this.primaryCooldown = 25;
+        this.secondaryCooldown = 40;
+        this.primaryAbilityDoc = new AbilityDoc("Roar", "Stun nearby enemies and buff allies.");
+        this.secondaryAbilityDoc = new AbilityDoc("Enlarge", "Grow larger and stronger.");
     }
 
     @Override
     public void primaryAbility() {
-        abilityMessage("Roar activated.");
+        Player p = state.toBukkit();
+        if (!isPrimaryReady()) return;
+        var entities = p.getWorld().getNearbyLivingEntities(p.getLocation(), 20);
+        for (org.bukkit.entity.LivingEntity le : entities) {
+            if (le != p && !(le instanceof Player)) {
+                le.addPotionEffect(new org.bukkit.potion.PotionEffect(org.bukkit.potion.PotionEffectType.SLOWNESS, 80, 3, false, false));
+            } else if (le instanceof Player && le != p) {
+                le.addPotionEffect(new org.bukkit.potion.PotionEffect(org.bukkit.potion.PotionEffectType.STRENGTH, 100, 1, false, false));
+            }
+        }
+        p.sendActionBar(Component.text("Roar!"));
+        resetPrimaryCooldown();
     }
 
     @Override
     public void secondaryAbility() {
-        abilityMessage("Enlarge toggled.");
+        Player p = state.toBukkit();
+        if (!isSecondaryReady()) return;
+        enlarged = !enlarged;
+        if (enlarged) {
+            p.addPotionEffect(new org.bukkit.potion.PotionEffect(org.bukkit.potion.PotionEffectType.STRENGTH, Integer.MAX_VALUE, 2, false, false));
+            p.addPotionEffect(new org.bukkit.potion.PotionEffect(org.bukkit.potion.PotionEffectType.RESISTANCE, Integer.MAX_VALUE, 0, false, false));
+            p.sendActionBar(Component.text("ENLARGED!"));
+        } else {
+            p.removePotionEffect(org.bukkit.potion.PotionEffectType.STRENGTH);
+            p.removePotionEffect(org.bukkit.potion.PotionEffectType.RESISTANCE);
+            p.sendActionBar(Component.text("Shrunk"));
+        }
+        resetSecondaryCooldown();
+    }
+
+    @Override
+    public void tick() {
     }
 
     @Override
     public void crouchOff() {
-        isCharging = false;
+    }
+
+    @Override
+    public void crouchOn() {
     }
 } 

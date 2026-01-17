@@ -8,51 +8,48 @@ import org.bukkit.entity.Player;
 @SuppressWarnings("unused")
 public class Alchemist extends Origin {
 
-    private boolean toggleState = false;
-    private double charge = 0.00;
-    private boolean isCharging = false;
-    private int primaryCooldown=10;
-    private int secondaryCooldown=10;
-    private int primaryCooldownCounter=10;
-    private int secondaryCooldownCounter=10;
-
     public Alchemist(PlayerState state) {
         super(state);
-        this.primaryAbilityDoc = new AbilityDoc("Arcane Analysis", "Gain experience and change your current enchanting table rolls");
-        this.secondaryAbilityDoc = new AbilityDoc("Catalyst", "Modify received potion effects based on catalyst input");
-        this.crouchAbilityDoc = new AbilityDoc("Arcane Shield", "Generate a temporary shield at the cost of experience");
-    }
-
-    private void abilityMessage(String msg) {
-        Player p = state.toBukkit();
-        p.sendActionBar(Component.text(msg));
-    }
-
-    @Override
-    public void tick() {
-        // Use fields to avoid unused warnings until abilities are implemented
-        if (toggleState || isCharging || charge > 0) { /* no-op */ }
-        if (primaryCooldownCounter < primaryCooldown) primaryCooldownCounter += 1;
-        if (secondaryCooldownCounter < secondaryCooldown) secondaryCooldownCounter += 1;
+        this.primaryCooldown = 20;
+        this.secondaryCooldown = 30;
+        this.primaryAbilityDoc = new AbilityDoc("Brew Buff", "Grant speed and strength to nearby players.");
+        this.secondaryAbilityDoc = new AbilityDoc("Catalyst", "Grant regeneration to self and nearby allies.");
     }
 
     @Override
     public void primaryAbility() {
-        abilityMessage("Arcane Analysis activated.");
-    }
-
-    @Override
-    public void crouchOff() {
-        isCharging = false;
+        Player p = state.toBukkit();
+        if (!isPrimaryReady()) return;
+        var nearby = p.getWorld().getNearbyPlayers(p.getLocation(), 20);
+        for (Player player : nearby) {
+            player.addPotionEffect(new org.bukkit.potion.PotionEffect(org.bukkit.potion.PotionEffectType.SPEED, 200, 1, false, false));
+            player.addPotionEffect(new org.bukkit.potion.PotionEffect(org.bukkit.potion.PotionEffectType.STRENGTH, 200, 0, false, false));
+        }
+        p.sendActionBar(Component.text("Brew activated!"));
+        resetPrimaryCooldown();
     }
 
     @Override
     public void secondaryAbility() {
-        abilityMessage("Catalyst activated.");
+        Player p = state.toBukkit();
+        if (!isSecondaryReady()) return;
+        var nearby = p.getWorld().getNearbyLivingEntities(p.getLocation(), 20, entity -> entity instanceof Player || entity instanceof org.bukkit.entity.LivingEntity);
+        for (org.bukkit.entity.LivingEntity le : nearby) {
+            le.addPotionEffect(new org.bukkit.potion.PotionEffect(org.bukkit.potion.PotionEffectType.REGENERATION, 100, 1, false, false));
+        }
+        p.sendActionBar(Component.text("Catalyst cast!"));
+        resetSecondaryCooldown();
+    }
+
+    @Override
+    public void tick() {
+    }
+
+    @Override
+    public void crouchOff() {
     }
 
     @Override
     public void crouchOn() {
-        abilityMessage("Arcane Shield engaged.");
     }
 }

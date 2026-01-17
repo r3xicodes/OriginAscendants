@@ -1,53 +1,52 @@
 package org.originsascendants.originAscendants.origins;
 
 import net.kyori.adventure.text.Component;
+import org.bukkit.entity.Player;
+import org.bukkit.util.RayTraceResult;
 import org.originsascendants.originAscendants.gui.AbilityDoc;
 import org.originsascendants.originAscendants.player.PlayerState;
-import org.bukkit.entity.Player;
 
-@SuppressWarnings("unused")
 public class Enderian extends Origin {
-
-    private boolean toggleState = false;
-    private double charge = 0.00;
-    private boolean isCharging = false;
-    private int primaryCooldown=10;
-    private int secondaryCooldown=10;
-    private int primaryCooldownCounter=10;
-    private int secondaryCooldownCounter=10;
 
     public Enderian(PlayerState state) {
         super(state);
-        this.primaryAbilityDoc = new AbilityDoc("Blink", "Teleport directly where you are looking.");
-        this.secondaryAbilityDoc = new AbilityDoc("Distortion Dodging", "Teleport when taking damage with a chance to dodge.");
-        this.crouchAbilityDoc = new AbilityDoc("None", "No crouch ability.");
-    }
-
-    private void abilityMessage(String msg) {
-        Player p = state.toBukkit();
-        p.sendActionBar(Component.text(msg));
-    }
-
-    @Override
-    public void tick() {
-        // Use fields to avoid unused warnings until abilities are implemented
-        if (toggleState || isCharging || charge > 0) { /* no-op */ }
-        if (primaryCooldownCounter < primaryCooldown) primaryCooldownCounter += 1;
-        if (secondaryCooldownCounter < secondaryCooldown) secondaryCooldownCounter += 1;
+        this.health = 20;
+        this.primaryCooldown = 20;
+        this.secondaryCooldown = 40;
+        this.primaryAbilityDoc = new AbilityDoc("Blink", "Teleport short distance in the direction you're looking.");
+        this.secondaryAbilityDoc = new AbilityDoc("Endport", "Teleport to a block you're looking at.");
     }
 
     @Override
     public void primaryAbility() {
-        abilityMessage("Blink attempted (not implemented).");
+        Player p = state.toBukkit();
+        if (!isPrimaryReady()) {
+            p.sendActionBar(Component.text("Blink on cooldown"));
+            return;
+        }
+        org.bukkit.Location target = p.getLocation().add(p.getLocation().getDirection().multiply(16));
+        target.setY(p.getWorld().getHighestBlockYAt(target) + 1);
+        p.teleport(target);
+        p.sendActionBar(Component.text("Blinked!"));
+        resetPrimaryCooldown();
     }
 
     @Override
     public void secondaryAbility() {
-        abilityMessage("Distortion dodge toggled (not implemented).");
+        Player p = state.toBukkit();
+        if (!isSecondaryReady()) {
+            p.sendActionBar(Component.text("Endport on cooldown"));
+            return;
+        }
+        RayTraceResult result = p.getWorld().rayTraceBlocks(p.getEyeLocation(), p.getLocation().getDirection(), 128);
+        if (result != null && result.getHitBlock() != null) {
+            org.bukkit.Location target = result.getHitBlock().getLocation().add(0.5, 1, 0.5);
+            p.teleport(target);
+            p.sendActionBar(Component.text("Endported!"));
+            resetSecondaryCooldown();
+        }
     }
-
-    @Override
-    public void crouchOff() {
+}
         isCharging = false;
     }
 }

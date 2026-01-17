@@ -8,51 +8,45 @@ import org.bukkit.entity.Player;
 @SuppressWarnings("unused")
 public class Breezeborn extends Origin {
 
-    private boolean toggleState = false;
-    private double charge = 0.00;
-    private boolean isCharging = false;
-    private int primaryCooldown=10;
-    private int secondaryCooldown=10;
-    private int primaryCooldownCounter=10;
-    private int secondaryCooldownCounter=10;
-
     public Breezeborn(PlayerState state) {
         super(state);
-        this.primaryAbilityDoc = new AbilityDoc("Gale Dash", "Short burst of wind speed to dash forward.");
-        this.secondaryAbilityDoc = new AbilityDoc("Updraft", "Create a small updraft to gain height.");
-        this.crouchAbilityDoc = new AbilityDoc("Featherfall", "Reduce fall damage and descend slowly.");
-    }
-
-    private void abilityMessage(String msg) {
-        Player p = state.toBukkit();
-        p.sendActionBar(Component.text(msg));
-    }
-
-    @Override
-    public void tick() {
-        // Use fields to avoid unused warnings until abilities are implemented
-        if (toggleState || isCharging || charge > 0) { /* no-op */ }
-        if (primaryCooldownCounter < primaryCooldown) primaryCooldownCounter += 1;
-        if (secondaryCooldownCounter < secondaryCooldown) secondaryCooldownCounter += 1;
+        this.primaryCooldown = 25;
+        this.secondaryCooldown = 30;
+        this.primaryAbilityDoc = new AbilityDoc("Breeze Ball", "Launch a wind projectile.");
+        this.secondaryAbilityDoc = new AbilityDoc("Wind Launch", "Launch yourself upward.");
     }
 
     @Override
     public void primaryAbility() {
-        abilityMessage("Gale Dash used.");
-    }
-
-    @Override
-    public void crouchOff() {
-        isCharging = false;
+        Player p = state.toBukkit();
+        if (!isPrimaryReady()) return;
+        org.bukkit.entity.Projectile projectile = p.getWorld().spawn(p.getEyeLocation(), org.bukkit.entity.Fireball.class, fb -> {
+            fb.setVelocity(p.getDirection().multiply(2.0));
+            fb.setShooter(p);
+            fb.setYield(0.1f);
+        });
+        p.sendActionBar(Component.text("Breeze ball launched!"));
+        resetPrimaryCooldown();
     }
 
     @Override
     public void secondaryAbility() {
-        abilityMessage("Updraft activated.");
+        Player p = state.toBukkit();
+        if (!isSecondaryReady()) return;
+        p.setVelocity(new org.bukkit.util.Vector(0, 2.0, 0));
+        p.sendActionBar(Component.text("Wind launch!"));
+        resetSecondaryCooldown();
+    }
+
+    @Override
+    public void tick() {
+    }
+
+    @Override
+    public void crouchOff() {
     }
 
     @Override
     public void crouchOn() {
-        abilityMessage("Featherfall engaged.");
     }
 }

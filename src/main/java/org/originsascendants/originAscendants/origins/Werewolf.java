@@ -8,49 +8,55 @@ import org.bukkit.entity.Player;
 @SuppressWarnings("unused")
 public class Werewolf extends Origin {
 
-    private boolean toggleState = false;
-    private double charge = 0.00;
-    private boolean isCharging = false;
-    private int primaryCooldown=10;
-    private int secondaryCooldown=10;
-    private int primaryCooldownCounter=10;
-    private int secondaryCooldownCounter=10;
+    private boolean wolfForm = false;
 
     public Werewolf(PlayerState state) {
         super(state);
-        this.primaryAbilityDoc = new AbilityDoc("Feral Slash", "Deliver a powerful melee strike.");
-        this.secondaryAbilityDoc = new AbilityDoc("Rage", "Temporarily boost strength.");
-        this.crouchAbilityDoc = new AbilityDoc("Howl", "Howl to buff allies and intimidate foes.");
-    }
-
-    private void abilityMessage(String msg) {
-        Player p = state.toBukkit();
-        p.sendActionBar(Component.text(msg));
-    }
-
-    @Override
-    public void tick() {
-        if (primaryCooldownCounter < primaryCooldown) primaryCooldownCounter += 1;
-        if (secondaryCooldownCounter < secondaryCooldown) secondaryCooldownCounter += 1;
+        this.primaryCooldown = 20;
+        this.secondaryCooldown = 30;
+        this.primaryAbilityDoc = new AbilityDoc("Howl", "Buff nearby wolves and allies.");
+        this.secondaryAbilityDoc = new AbilityDoc("Transform", "Toggle wolf form for stat changes.");
     }
 
     @Override
     public void primaryAbility() {
-        abilityMessage("Feral Slash used.");
-    }
-
-    @Override
-    public void crouchOff() {
-        isCharging = false;
+        Player p = state.toBukkit();
+        if (!isPrimaryReady()) return;
+        var wolves = p.getWorld().getNearbyLivingEntities(p.getLocation(), 30, entity -> entity instanceof org.bukkit.entity.Wolf);
+        for (org.bukkit.entity.LivingEntity le : wolves) {
+            le.addPotionEffect(new org.bukkit.potion.PotionEffect(org.bukkit.potion.PotionEffectType.STRENGTH, 200, 1, false, false));
+            le.addPotionEffect(new org.bukkit.potion.PotionEffect(org.bukkit.potion.PotionEffectType.SPEED, 200, 1, false, false));
+        }
+        p.sendActionBar(Component.text("Howl! Wolves buffed."));
+        resetPrimaryCooldown();
     }
 
     @Override
     public void secondaryAbility() {
-        abilityMessage("Rage activated.");
+        Player p = state.toBukkit();
+        if (!isSecondaryReady()) return;
+        wolfForm = !wolfForm;
+        if (wolfForm) {
+            p.addPotionEffect(new org.bukkit.potion.PotionEffect(org.bukkit.potion.PotionEffectType.STRENGTH, Integer.MAX_VALUE, 1, false, false));
+            p.addPotionEffect(new org.bukkit.potion.PotionEffect(org.bukkit.potion.PotionEffectType.SPEED, Integer.MAX_VALUE, 0, false, false));
+            p.sendActionBar(Component.text("Wolf Form ON"));
+        } else {
+            p.removePotionEffect(org.bukkit.potion.PotionEffectType.STRENGTH);
+            p.removePotionEffect(org.bukkit.potion.PotionEffectType.SPEED);
+            p.sendActionBar(Component.text("Wolf Form OFF"));
+        }
+        resetSecondaryCooldown();
+    }
+
+    @Override
+    public void tick() {
+    }
+
+    @Override
+    public void crouchOff() {
     }
 
     @Override
     public void crouchOn() {
-        abilityMessage("Howl started.");
     }
 }

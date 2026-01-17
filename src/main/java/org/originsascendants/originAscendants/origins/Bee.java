@@ -8,51 +8,47 @@ import org.bukkit.entity.Player;
 @SuppressWarnings("unused")
 public class Bee extends Origin {
 
-    private boolean toggleState = false;
-    private double charge = 0.00;
-    private boolean isCharging = false;
-    private int primaryCooldown=10;
-    private int secondaryCooldown=10;
-    private int primaryCooldownCounter=10;
-    private int secondaryCooldownCounter=10;
-
     public Bee(PlayerState state) {
         super(state);
-        this.primaryAbilityDoc = new AbilityDoc("Pollinate", "Bonemeal nearby saplings and harvest honey/flowers.");
-        this.secondaryAbilityDoc = new AbilityDoc("Final Sting", "1% chance to deal massive damage at cost of health (toggle).");
-        this.crouchAbilityDoc = new AbilityDoc("Buzz Away", "Crouching grants levitation and swiftsneak speed.");
-    }
-
-    private void abilityMessage(String msg) {
-        Player p = state.toBukkit();
-        p.sendActionBar(Component.text(msg));
-    }
-
-    @Override
-    public void tick() {
-        // Use fields to avoid unused warnings until abilities are implemented
-        if (toggleState || isCharging || charge > 0) { /* no-op */ }
-        if (primaryCooldownCounter < primaryCooldown) primaryCooldownCounter += 1;
-        if (secondaryCooldownCounter < secondaryCooldown) secondaryCooldownCounter += 1;
+        this.primaryCooldown = 20;
+        this.secondaryCooldown = 40;
+        this.primaryAbilityDoc = new AbilityDoc("Pollinate", "Heal nearby creatures.");
+        this.secondaryAbilityDoc = new AbilityDoc("Final Sting", "Sting a target.");
     }
 
     @Override
     public void primaryAbility() {
-        abilityMessage("Pollinate activated.");
-    }
-
-    @Override
-    public void crouchOff() {
-        isCharging = false;
+        Player p = state.toBukkit();
+        if (!isPrimaryReady()) return;
+        for (org.bukkit.entity.LivingEntity entity : p.getWorld().getEntitiesByClass(org.bukkit.entity.LivingEntity.class)) {
+            if (p.getLocation().distance(entity.getLocation()) < 20 && entity != p) {
+                entity.setHealth(Math.min(entity.getMaxHealth(), entity.getHealth() + 5));
+            }
+        }
+        p.sendActionBar(Component.text("Pollinated!"));
+        resetPrimaryCooldown();
     }
 
     @Override
     public void secondaryAbility() {
-        abilityMessage("Final Sting toggled.");
+        Player p = state.toBukkit();
+        if (!isSecondaryReady()) return;
+        org.bukkit.util.RayTraceResult result = p.getWorld().rayTraceEntities(p.getEyeLocation(), p.getLocation().getDirection(), 30);
+        if (result != null && result.getHitEntity() instanceof org.bukkit.entity.LivingEntity) {
+            org.bukkit.entity.LivingEntity target = (org.bukkit.entity.LivingEntity) result.getHitEntity();
+            target.damage(6);
+            p.sendActionBar(Component.text("Stung!"));
+            resetSecondaryCooldown();
+        }
+    }
+
+    @Override
+    public void crouchOff() {
+        // Buzz away deactivated
     }
 
     @Override
     public void crouchOn() {
-        abilityMessage("Buzz Away: levitation effect (not actually applied). Implement potion effect later if desired.");
+        // Buzz away activated
     }
 }

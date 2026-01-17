@@ -8,51 +8,59 @@ import org.bukkit.entity.Player;
 @SuppressWarnings("unused")
 public class Sculkborn extends Origin {
 
-    private boolean toggleState = false;
-    private double charge = 0.00;
-    private boolean isCharging = false;
-    private int primaryCooldown=10;
-    private int secondaryCooldown=10;
-    private int primaryCooldownCounter=10;
-    private int secondaryCooldownCounter=10;
+    private boolean echolocating = false;
 
     public Sculkborn(PlayerState state) {
         super(state);
-        this.primaryAbilityDoc = new AbilityDoc("Sculk Sense", "Enhanced sensing in sculk-rich areas.");
-        this.secondaryAbilityDoc = new AbilityDoc("Silent Step", "Move quietly and avoid detection.");
-        this.crouchAbilityDoc = new AbilityDoc("Echo", "Emit a sculk pulse to reveal nearby creatures.");
-    }
-
-    private void abilityMessage(String msg) {
-        Player p = state.toBukkit();
-        p.sendActionBar(Component.text(msg));
-    }
-
-    @Override
-    public void tick() {
-        // Use fields to avoid unused warnings until abilities are implemented
-        if (toggleState || isCharging || charge > 0) { /* no-op */ }
-        if (primaryCooldownCounter < primaryCooldown) primaryCooldownCounter += 1;
-        if (secondaryCooldownCounter < secondaryCooldown) secondaryCooldownCounter += 1;
+        this.primaryCooldown = 30;
+        this.secondaryCooldown = 25;
+        this.primaryAbilityDoc = new AbilityDoc("Shriek", "Emit a sonic boom with darkness effect.");
+        this.secondaryAbilityDoc = new AbilityDoc("Echolocation", "Toggle entity highlighting.");
     }
 
     @Override
     public void primaryAbility() {
-        abilityMessage("Sculk Sense activated.");
-    }
-
-    @Override
-    public void crouchOff() {
-        isCharging = false;
+        Player p = state.toBukkit();
+        if (!isPrimaryReady()) return;
+        var entities = p.getWorld().getNearbyLivingEntities(p.getLocation(), 20);
+        for (LivingEntity le : entities) {
+            if (le != p) {
+                le.damage(5.0);
+                le.addPotionEffect(new org.bukkit.potion.PotionEffect(org.bukkit.potion.PotionEffectType.DARKNESS, 60, 0, false, false));
+            }
+        }
+        p.sendActionBar(Component.text("Shriek!"));
+        resetPrimaryCooldown();
     }
 
     @Override
     public void secondaryAbility() {
-        abilityMessage("Silent Step toggled.");
+        Player p = state.toBukkit();
+        if (!isSecondaryReady()) return;
+        echolocating = !echolocating;
+        if (echolocating) {
+            var entities = p.getWorld().getNearbyLivingEntities(p.getLocation(), 40);
+            for (LivingEntity le : entities) {
+                if (le != p) {
+                    le.addPotionEffect(new org.bukkit.potion.PotionEffect(org.bukkit.potion.PotionEffectType.GLOWING, 100, 0, false, false));
+                }
+            }
+            p.sendActionBar(Component.text("Echolocation ON"));
+        } else {
+            p.sendActionBar(Component.text("Echolocation OFF"));
+        }
+        resetSecondaryCooldown();
+    }
+
+    @Override
+    public void tick() {
+    }
+
+    @Override
+    public void crouchOff() {
     }
 
     @Override
     public void crouchOn() {
-        abilityMessage("Echo pulse emitted.");
     }
 }

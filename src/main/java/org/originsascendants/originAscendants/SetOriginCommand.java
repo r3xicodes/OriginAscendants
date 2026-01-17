@@ -41,7 +41,14 @@ public class SetOriginCommand implements CommandExecutor {
             sender.sendMessage("Unknown origin type: "+originType);
             return true;
         }
+        
+        // Remove old origin attributes before switching
+        if (state.getOrigin() != null) {
+            state.getOrigin().removeAttributes();
+        }
+        
         state.setOrigin(origin);
+        origin.applyAttributes();
         sender.sendMessage("Set "+playerName+"'s origin to "+originType);
         return true;
     }

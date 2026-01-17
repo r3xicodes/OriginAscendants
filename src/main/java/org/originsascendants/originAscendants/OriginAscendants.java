@@ -31,8 +31,9 @@ public final class OriginAscendants extends JavaPlugin {
 
         Bukkit.getScheduler().runTaskTimer(this, ()->{
             for(PlayerState state : PlayerRegistry.getAllPlayerStates()) {
-                if (state != null) {
+                if (state != null && state.getOrigin() != null) {
                     state.getOrigin().tick();
+                    state.getOrigin().updateCooldowns();
                 }
             }
         },1L,1L);

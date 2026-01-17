@@ -8,51 +8,53 @@ import org.bukkit.entity.Player;
 @SuppressWarnings("unused")
 public class Dwarf extends Origin {
 
-    private boolean toggleState = false;
-    private double charge = 0.00;
-    private boolean isCharging = false;
-    private int primaryCooldown=10;
-    private int secondaryCooldown=10;
-    private int primaryCooldownCounter=10;
-    private int secondaryCooldownCounter=10;
+    private long prospectStartTime = 0;
+    private boolean prospecting = false;
 
     public Dwarf(PlayerState state) {
         super(state);
-        this.primaryAbilityDoc = new AbilityDoc("Stonework", "Enhanced mining speed and tool bonuses.");
-        this.secondaryAbilityDoc = new AbilityDoc("Anvil Mastery", "Improved anvil outcomes.");
-        this.crouchAbilityDoc = new AbilityDoc("Sturdy Stance", "Gain increased resistance while crouched.");
-    }
-
-    private void abilityMessage(String msg) {
-        Player p = state.toBukkit();
-        p.sendActionBar(Component.text(msg));
-    }
-
-    @Override
-    public void tick() {
-        // Use fields to avoid unused warnings until abilities are implemented
-        if (toggleState || isCharging || charge > 0) { /* no-op */ }
-        if (primaryCooldownCounter < primaryCooldown) primaryCooldownCounter += 1;
-        if (secondaryCooldownCounter < secondaryCooldown) secondaryCooldownCounter += 1;
+        this.primaryCooldown = 20;
+        this.secondaryCooldown = 30;
+        this.primaryAbilityDoc = new AbilityDoc("Prospecting", "Highlight nearby ores for 60 seconds.");
+        this.secondaryAbilityDoc = new AbilityDoc("Rallying Cry", "Grant resistance to nearby allies.");
     }
 
     @Override
     public void primaryAbility() {
-        abilityMessage("Stonework activated.");
-    }
-
-    @Override
-    public void crouchOff() {
-        isCharging = false;
+        Player p = state.toBukkit();
+        if (!isPrimaryReady()) return;
+        prospecting = true;
+        prospectStartTime = System.currentTimeMillis();
+        p.sendActionBar(Component.text("Ores highlighted for 60 seconds!"));
+        resetPrimaryCooldown();
     }
 
     @Override
     public void secondaryAbility() {
-        abilityMessage("Anvil Mastery used.");
+        Player p = state.toBukkit();
+        if (!isSecondaryReady()) return;
+        var nearby = p.getWorld().getNearbyPlayers(p.getLocation(), 30);
+        for (Player player : nearby) {
+            if (player != p) {
+                player.addPotionEffect(new org.bukkit.potion.PotionEffect(org.bukkit.potion.PotionEffectType.RESISTANCE, 100, 1, false, false));
+            }
+        }
+        p.sendActionBar(Component.text("Rallying Cry!"));
+        resetSecondaryCooldown();
+    }
+
+    @Override
+    public void tick() {
+        if (prospecting && System.currentTimeMillis() - prospectStartTime > 60000) {
+            prospecting = false;
+        }
+    }
+
+    @Override
+    public void crouchOff() {
     }
 
     @Override
     public void crouchOn() {
-        abilityMessage("Sturdy Stance engaged.");
     }
 }

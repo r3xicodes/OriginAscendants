@@ -16,15 +16,13 @@ public class Elytrian extends Origin {
     private boolean isCharging = false;
     private double boostAmount = 3.0;
 
-    //counters count up to the cooldown. When the counter equals the cooldown, abilities are available
-    private int primaryCooldown=10;
-    private int secondaryCooldown=10;
-    private int primaryCooldownCounter=10;
-    private int secondaryCooldownCounter=10;
-
 
     public Elytrian(PlayerState state) {
         super(state);
+        this.health = 20;
+        this.primaryCooldown = 10;
+        this.secondaryCooldown = 20;
+        this.crouchCooldown = 5;
 
         // Set up GUI stuff
         this.primaryAbilityDoc = new AbilityDoc(
@@ -56,12 +54,6 @@ public class Elytrian extends Origin {
     @Override
     public void tick() {
         Player p = state.toBukkit();
-        if (primaryCooldownCounter < primaryCooldown) {
-            primaryCooldownCounter += 1;
-        }
-        if (secondaryCooldownCounter < secondaryCooldown) {
-            secondaryCooldownCounter += 1;
-        }
         if (p.isGliding()) {
             if (isCharging) {
                 p.sendActionBar(Component.text("Charge: "+String.valueOf(Math.round(flapCharge*100))+"%"));
@@ -88,8 +80,8 @@ public class Elytrian extends Origin {
 
     @Override
     public void primaryAbility() {
-        Player p=state.toBukkit();
-        if (primaryCooldownCounter < primaryCooldown) {
+        Player p = state.toBukkit();
+        if (!isPrimaryReady()) {
             p.sendActionBar(Component.text("Boost is on cooldown"));
             return;
         }
@@ -101,13 +93,13 @@ public class Elytrian extends Origin {
             Vector upward = new Vector(0, boostAmount, 0);
             p.setVelocity(upward);
         }
-        primaryCooldownCounter=0;
+        resetPrimaryCooldown();
     }
 
     @Override
     public void secondaryAbility() {
-        Player p=state.toBukkit();
-        if (secondaryCooldownCounter < secondaryCooldown) {
+        Player p = state.toBukkit();
+        if (!isSecondaryReady()) {
             p.sendActionBar(Component.text("Fold Wings is on cooldown"));
             return;
         }
@@ -119,12 +111,12 @@ public class Elytrian extends Origin {
             } else {
                 p.getInventory().setChestplate(createWings());
                 wingsFolded = false;
-                secondaryCooldownCounter=0;
+                resetSecondaryCooldown();
                 p.sendActionBar(Component.text("You unfold your wings."));
             }
         } else {
             p.getInventory().setChestplate(null);
-            secondaryCooldownCounter=0;
+            resetSecondaryCooldown();
             wingsFolded = true;
             p.sendActionBar(Component.text("You fold your wings."));
         }
