@@ -2,7 +2,7 @@ package org.originsascendants.originAscendants.player;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import org.originsascendants.originAscendants.origins.Origin;
+import org.originsascendants.originAscendants.origins.base.Origin;
 import org.originsascendants.originAscendants.player.PlayerState;
 
 import java.util.Collection;

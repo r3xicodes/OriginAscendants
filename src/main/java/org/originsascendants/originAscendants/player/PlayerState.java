@@ -4,7 +4,7 @@ import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import org.originsascendants.originAscendants.origins.Origin;
+import org.originsascendants.originAscendants.origins.base.Origin;
 
 public class PlayerState {
     // This class is for origin-related data in reference to a player.

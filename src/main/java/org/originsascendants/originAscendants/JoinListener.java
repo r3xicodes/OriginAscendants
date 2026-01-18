@@ -3,7 +3,7 @@ package org.originsascendants.originAscendants;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
-import org.originsascendants.originAscendants.origins.OriginFactory;
+import org.originsascendants.originAscendants.origins.base.OriginFactory;
 import org.originsascendants.originAscendants.player.PlayerRegistry;
 import org.originsascendants.originAscendants.player.PlayerState;
 

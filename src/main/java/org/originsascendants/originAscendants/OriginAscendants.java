@@ -4,7 +4,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
 import org.originsascendants.originAscendants.player.*;
-import org.originsascendants.originAscendants.origins.OriginFactory;
+import org.originsascendants.originAscendants.origins.base.OriginFactory;
 
 public final class OriginAscendants extends JavaPlugin {
 

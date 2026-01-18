@@ -7,7 +7,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.originsascendants.originAscendants.origins.*;
+import org.originsascendants.originAscendants.origins.base.*;
 import org.originsascendants.originAscendants.player.*;
 
 public class SetOriginCommand implements CommandExecutor {
