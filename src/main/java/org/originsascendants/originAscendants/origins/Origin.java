@@ -3,10 +3,23 @@ package org.originsascendants.originAscendants.origins;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.entity.Player;
+import org.bukkit.potion.PotionEffect;
 import org.originsascendants.originAscendants.gui.AbilityDoc;
 import org.originsascendants.originAscendants.player.PlayerState;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
+/**
+ * Abstract base class for all player origins in the OriginAscendants plugin.
+ * Each origin provides unique passive abilities and active abilities that can be triggered.
+ * 
+ * Features:
+ * - Cooldown management for abilities
+ * - Attribute modifiers for passive effects
+ * - Potion effect tracking
+ * - Ability documentation for GUI
+ */
 public abstract class Origin {
     protected final PlayerState state;
 
@@ -24,6 +37,12 @@ public abstract class Origin {
     protected int primaryCooldown = 10;
     protected int secondaryCooldown = 10;
     protected int crouchCooldown = 10;
+    
+    // Track applied potion effects for cleanup
+    protected Map<String, PotionEffect> appliedEffects = new HashMap<>();
+    
+    // Track applied attribute modifiers for cleanup
+    protected Map<String, AttributeModifier> appliedModifiers = new HashMap<>();
 
     protected Origin(PlayerState state) {
         this.state = state;
@@ -67,6 +86,7 @@ public abstract class Origin {
                     AttributeModifier.Operation.ADD_NUMBER
             );
             player.getAttribute(attribute).addModifier(modifier);
+            appliedModifiers.put(attribute.name(), modifier);
         }
     }
 
@@ -77,11 +97,12 @@ public abstract class Origin {
         if (player.getAttribute(attribute) != null) {
             AttributeModifier modifier = new AttributeModifier(
                     UUID.randomUUID(),
-                    "origin_" + attribute.name().toLowerCase(),
+                    "origin_" + attribute.name().toLowerCase() + "_percent",
                     percent,
                     AttributeModifier.Operation.MULTIPLY_SCALAR_1
             );
             player.getAttribute(attribute).addModifier(modifier);
+            appliedModifiers.put(attribute.name() + "_percent", modifier);
         }
     }
 
@@ -134,5 +155,26 @@ public abstract class Origin {
      */
     protected void resetCrouchCooldown() {
         crouchCooldownCounter = 0;
+    }
+    
+    /**
+     * Get the display name of this origin
+     */
+    public String getDisplayName() {
+        return this.getClass().getSimpleName();
+    }
+    
+    /**
+     * Get the description of this origin
+     */
+    public String getDescription() {
+        return "An origin with unique abilities";
+    }
+    
+    /**
+     * Get the cooldown in seconds for display (converted from ticks)
+     */
+    protected int getCooldownSeconds(int ticks) {
+        return ticks / 20;
     }
 }

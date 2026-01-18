@@ -45,9 +45,7 @@ java {
 
 tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8'
-    // Enable unused symbol linting so the analyzer discovers unused fields/locals
-    options.compilerArgs += ['-Xlint:unused']
-
+    // Removed -Xlint:unused due to Java 21 compatibility
     if (targetJavaVersion >= 10 || JavaVersion.current().isJava10Compatible()) {
         options.release.set(targetJavaVersion)
     }
