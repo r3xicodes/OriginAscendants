@@ -110,17 +110,26 @@ public class Blazeborn extends Origin {
         fuelToggle = !fuelToggle;
         
         if (fuelToggle) {
-            p.sendMessage(Component.text("Fuel consumption ON", NamedTextColor.RED));
-            
-            // Try to consume fuel items
             ItemStack mainHand = p.getInventory().getItemInMainHand();
             if (isFuelItem(mainHand)) {
                 heatLevel = Math.min(MAX_HEAT, heatLevel + 1000);
                 mainHand.setAmount(mainHand.getAmount() - 1);
                 ParticleUtil.spawnParticlesAroundPlayer(p, Particle.FLAME, 5);
+                
+                p.sendMessage(Component.text("━━━━━━━━━━━━━━━━━━━━━━━", NamedTextColor.DARK_GRAY));
+                p.sendMessage(Component.text("🔥 FUEL CONSUMED 🔥", NamedTextColor.GOLD).append(Component.text(" - Heat Increased", NamedTextColor.RED)));
+                p.sendMessage(Component.text("Heat: " + heatLevel + " / " + MAX_HEAT, NamedTextColor.YELLOW));
+                p.sendActionBar(Component.text("Fuel consumed! Heat: ", NamedTextColor.GOLD).append(Component.text(heatLevel + "%", NamedTextColor.RED)));
+            } else {
+                p.sendMessage(Component.text("━━━━━━━━━━━━━━━━━━━━━━━", NamedTextColor.DARK_GRAY));
+                p.sendMessage(Component.text("⚠ NO FUEL FOUND ⚠", NamedTextColor.RED));
+                p.sendMessage(Component.text("Hold: Coal, Charcoal, or Blaze Rod", NamedTextColor.GRAY));
+                fuelToggle = false;
             }
         } else {
-            p.sendMessage(Component.text("Fuel consumption OFF", NamedTextColor.GRAY));
+            p.sendMessage(Component.text("━━━━━━━━━━━━━━━━━━━━━━━", NamedTextColor.DARK_GRAY));
+            p.sendMessage(Component.text("🔥 FUEL MODE DISABLED", NamedTextColor.GRAY));
+            p.sendActionBar(Component.text("Fuel mode disabled", NamedTextColor.GRAY));
         }
         
         resetPrimaryCooldown();
@@ -129,7 +138,10 @@ public class Blazeborn extends Origin {
     @Override
     public void secondaryAbility() {
         Player p = state.toBukkit();
-        if (!isSecondaryReady() || heatLevel < 2000) return;
+        if (!isSecondaryReady() || heatLevel < 2000) {
+            p.sendActionBar(Component.text("Not enough heat! Need: 2000, Have: " + heatLevel, NamedTextColor.RED));
+            return;
+        }
         
         int heatUsed = Math.min(heatLevel, 5000);
         heatLevel -= heatUsed;
@@ -139,15 +151,22 @@ public class Blazeborn extends Origin {
         ParticleUtil.spawnParticlesAtEyes(p, Particle.FLAME, 15, 0.5, 0.5, 0.5);
         
         // Knockback nearby enemies
+        int enemiesHit = 0;
         for (org.bukkit.entity.LivingEntity entity : EntityUtil.getNearbyEntities(p, 10, org.bukkit.entity.LivingEntity.class)) {
             if (entity != p && !(entity instanceof Player)) {
                 org.bukkit.util.Vector direction = entity.getLocation().toVector().subtract(p.getLocation().toVector()).normalize();
                 EntityUtil.knockbackAway(entity, direction, 1.5);
                 EntityUtil.damageWithKnockback(entity, 5.0, direction);
+                enemiesHit++;
             }
         }
         
-        p.sendMessage(Component.text("Thermal Surge! Heat: " + heatLevel, NamedTextColor.YELLOW));
+        p.sendMessage(Component.text("━━━━━━━━━━━━━━━━━━━━━━━", NamedTextColor.DARK_GRAY));
+        p.sendMessage(Component.text("⚡ THERMAL SURGE ⚡", NamedTextColor.GOLD).append(Component.text(" - Knockback", NamedTextColor.YELLOW)));
+        p.sendMessage(Component.text("Heat Used: " + heatUsed, NamedTextColor.RED).append(Component.text(" | Enemies Hit: " + enemiesHit, NamedTextColor.RED)));
+        p.sendMessage(Component.text("Speed Boost + Knockback Pulse", NamedTextColor.YELLOW));
+        p.sendActionBar(Component.text("Thermal Surge! ", NamedTextColor.GOLD).append(Component.text(enemiesHit + " enemies knocked back", NamedTextColor.RED)));
+        
         resetSecondaryCooldown();
     }
 
