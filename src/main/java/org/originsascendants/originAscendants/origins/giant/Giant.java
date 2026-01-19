@@ -2,9 +2,12 @@ package org.originsascendants.originAscendants.origins.giant;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.bossbar.BossBar;
 import org.originsascendants.originAscendants.origins.base.Origin;
 import org.originsascendants.originAscendants.gui.AbilityDoc;
 import org.originsascendants.originAscendants.player.PlayerState;
+import org.originsascendants.originAscendants.util.AbilityDisplay;
+import org.originsascendants.originAscendants.util.BossBarManager;
 import org.bukkit.entity.Player;
 
 /**
@@ -28,8 +31,15 @@ public class Giant extends Origin {
     }
 
     @Override
-    public String getDisplayName() {
-        return "§6Giant";
+    public void applyAttributes() {
+        super.applyAttributes();
+        Player p = state.toBukkit();
+        // Giants are 2.0x scale with more health and knockback resistance
+        setScale(p, 2.0);
+        setMaxHealth(p, 36.0);  // 18 hearts
+        setKnockbackResistance(p, 0.25);
+        setAttackDamage(p, 2.0);
+        setMovementSpeed(p, 0.133);
     }
 
     @Override
@@ -56,11 +66,8 @@ public class Giant extends Origin {
             }
         }
         
-        p.sendMessage(Component.text("━━━━━━━━━━━━━━━━━━━━━━━", NamedTextColor.DARK_GRAY));
-        p.sendMessage(Component.text("☆ ROAR ☆", NamedTextColor.GOLD).append(Component.text(" - Crowd Control", NamedTextColor.YELLOW)));
-        p.sendMessage(Component.text("Enemies Stunned: " + affectedEnemies, NamedTextColor.RED));
-        p.sendMessage(Component.text("Allies Buffed: " + affectedAllies, NamedTextColor.GREEN));
-        p.sendActionBar(Component.text("ROAR! ", NamedTextColor.GOLD).append(Component.text("Enemies stunned!", NamedTextColor.RED)));
+        AbilityDisplay.showPrimaryAbility(p, "Roar", NamedTextColor.GOLD);
+        p.sendActionBar(Component.text("ROAR! ", NamedTextColor.GOLD).append(Component.text(affectedEnemies + " enemies stunned!", NamedTextColor.RED)));
         
         resetPrimaryCooldown();
     }
@@ -75,18 +82,17 @@ public class Giant extends Origin {
             p.addPotionEffect(new org.bukkit.potion.PotionEffect(org.bukkit.potion.PotionEffectType.STRENGTH, Integer.MAX_VALUE, 2, false, false));
             p.addPotionEffect(new org.bukkit.potion.PotionEffect(org.bukkit.potion.PotionEffectType.RESISTANCE, Integer.MAX_VALUE, 0, false, false));
             
-            p.sendMessage(Component.text("━━━━━━━━━━━━━━━━━━━━━━━", NamedTextColor.DARK_GRAY));
-            p.sendMessage(Component.text("↑ ENLARGE ↑", NamedTextColor.GOLD).append(Component.text(" - Form Changed", NamedTextColor.YELLOW)));
-            p.sendMessage(Component.text("Strength III + Resistance I", NamedTextColor.GREEN));
+            AbilityDisplay.showSecondaryAbility(p, "Enlarge", NamedTextColor.GOLD);
             p.sendActionBar(Component.text("You have ENLARGED!", NamedTextColor.GOLD));
+            
+            // Show bar for 3 minutes duration
+            BossBarManager.showResourceBar(p, "Enlarge", 180, 180, BossBar.Color.PURPLE);
         } else {
             p.removePotionEffect(org.bukkit.potion.PotionEffectType.STRENGTH);
             p.removePotionEffect(org.bukkit.potion.PotionEffectType.RESISTANCE);
             
-            p.sendMessage(Component.text("━━━━━━━━━━━━━━━━━━━━━━━", NamedTextColor.DARK_GRAY));
-            p.sendMessage(Component.text("↓ SHRINK ↓", NamedTextColor.GRAY).append(Component.text(" - Form Changed", NamedTextColor.YELLOW)));
-            p.sendMessage(Component.text("Effects Removed", NamedTextColor.RED));
             p.sendActionBar(Component.text("You have SHRUNK", NamedTextColor.GRAY));
+            BossBarManager.hideResourceBar(p, "Enlarge");
         }
         
         resetSecondaryCooldown();

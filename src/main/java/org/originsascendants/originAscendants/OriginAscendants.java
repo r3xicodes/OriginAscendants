@@ -27,6 +27,9 @@ public final class OriginAscendants extends JavaPlugin {
             getServer().getPluginManager().registerEvents(new AbilityListener(), this);
             getLogger().info("✓ Registered AbilityListener");
 
+            getServer().getPluginManager().registerEvents(new OriginEventListener(), this);
+            getLogger().info("✓ Registered OriginEventListener");
+
             // Register commands
             if (getCommand("setorigin") != null) {
                 getCommand("setorigin").setExecutor(new SetOriginCommand());

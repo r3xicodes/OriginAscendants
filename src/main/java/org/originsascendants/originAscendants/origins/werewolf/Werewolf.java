@@ -1,10 +1,15 @@
 package org.originsascendants.originAscendants.origins.werewolf;
 
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.bossbar.BossBar;
 import org.originsascendants.originAscendants.origins.base.Origin;
 import org.originsascendants.originAscendants.gui.AbilityDoc;
 import org.originsascendants.originAscendants.player.PlayerState;
+import org.originsascendants.originAscendants.util.AbilityDisplay;
+import org.originsascendants.originAscendants.util.BossBarManager;
 import org.bukkit.entity.Player;
+import org.bukkit.Material;
 
 @SuppressWarnings("unused")
 public class Werewolf extends Origin {
@@ -20,6 +25,15 @@ public class Werewolf extends Origin {
     }
 
     @Override
+    public void applyAttributes() {
+        super.applyAttributes();
+        Player p = state.toBukkit();
+        setMaxHealth(p, 20.0);  // 10 hearts
+        setMovementSpeed(p, 0.105); // 105% speed
+        setAttackDamage(p, 1.05); // base 1.05
+    }
+
+    @Override
     public void primaryAbility() {
         Player p = state.toBukkit();
         if (!isPrimaryReady()) return;
@@ -28,7 +42,8 @@ public class Werewolf extends Origin {
             le.addPotionEffect(new org.bukkit.potion.PotionEffect(org.bukkit.potion.PotionEffectType.STRENGTH, 200, 1, false, false));
             le.addPotionEffect(new org.bukkit.potion.PotionEffect(org.bukkit.potion.PotionEffectType.SPEED, 200, 1, false, false));
         }
-        p.sendActionBar(Component.text("Howl! Wolves buffed."));
+        AbilityDisplay.showPrimaryAbility(p, "Howl", NamedTextColor.DARK_GRAY);
+        BossBarManager.showCooldownBar(p, "Howl", primaryCooldown, primaryCooldown);
         resetPrimaryCooldown();
     }
 
@@ -40,12 +55,13 @@ public class Werewolf extends Origin {
         if (wolfForm) {
             p.addPotionEffect(new org.bukkit.potion.PotionEffect(org.bukkit.potion.PotionEffectType.STRENGTH, Integer.MAX_VALUE, 1, false, false));
             p.addPotionEffect(new org.bukkit.potion.PotionEffect(org.bukkit.potion.PotionEffectType.SPEED, Integer.MAX_VALUE, 0, false, false));
-            p.sendActionBar(Component.text("Wolf Form ON"));
+            AbilityDisplay.showSecondaryAbility(p, "Transform", NamedTextColor.DARK_GRAY);
         } else {
             p.removePotionEffect(org.bukkit.potion.PotionEffectType.STRENGTH);
             p.removePotionEffect(org.bukkit.potion.PotionEffectType.SPEED);
-            p.sendActionBar(Component.text("Wolf Form OFF"));
+            AbilityDisplay.showSecondaryAbility(p, "Transform", NamedTextColor.DARK_GRAY);
         }
+        BossBarManager.showCooldownBar(p, "Transform", secondaryCooldown, secondaryCooldown);
         resetSecondaryCooldown();
     }
 
@@ -59,6 +75,25 @@ public class Werewolf extends Origin {
 
     @Override
     public void crouchOn() {
+    }
+
+    @Override
+    public void onConsume(org.bukkit.event.player.PlayerItemConsumeEvent event) {
+        // Werewolves only eat meat
+        Material item = event.getItem().getType();
+        if (!isMeat(item)) {
+            event.setCancelled(true);
+            state.toBukkit().sendActionBar(Component.text("Werewolves only eat meat!", NamedTextColor.RED));
+        }
+    }
+
+    private boolean isMeat(Material material) {
+        return material == Material.COOKED_BEEF || material == Material.BEEF ||
+               material == Material.COOKED_PORKCHOP || material == Material.PORKCHOP ||
+               material == Material.COOKED_CHICKEN || material == Material.CHICKEN ||
+               material == Material.COOKED_MUTTON || material == Material.MUTTON ||
+               material == Material.COOKED_SALMON || material == Material.SALMON ||
+               material == Material.COOKED_COD || material == Material.COD;
     }
 }
 

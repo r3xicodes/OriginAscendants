@@ -1,9 +1,13 @@
 package org.originsascendants.originAscendants.origins.shulk;
 
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.bossbar.BossBar;
 import org.originsascendants.originAscendants.origins.base.Origin;
 import org.originsascendants.originAscendants.gui.AbilityDoc;
 import org.originsascendants.originAscendants.player.PlayerState;
+import org.originsascendants.originAscendants.util.AbilityDisplay;
+import org.originsascendants.originAscendants.util.BossBarManager;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.LivingEntity;
 
@@ -19,11 +23,28 @@ public class Shulk extends Origin {
     }
 
     @Override
+    public void applyAttributes() {
+        super.applyAttributes();
+        Player p = state.toBukkit();
+        setMovementSpeed(p, 0.070); // 70% speed
+        setAttackDamage(p, 1.0); // base attack damage
+        // Mining efficiency: slight boost (105% base)
+        org.bukkit.potion.PotionEffect haste = new org.bukkit.potion.PotionEffect(org.bukkit.potion.PotionEffectType.HASTE, Integer.MAX_VALUE, 0, false, false);
+        appliedEffects.put("HASTE", haste);
+        p.addPotionEffect(haste);
+        // Bulwark passive: Resistance I
+        org.bukkit.potion.PotionEffect resistance = new org.bukkit.potion.PotionEffect(org.bukkit.potion.PotionEffectType.RESISTANCE, Integer.MAX_VALUE, 0, false, false);
+        appliedEffects.put("RESISTANCE", resistance);
+        p.addPotionEffect(resistance);
+    }
+
+    @Override
     public void primaryAbility() {
         Player p = state.toBukkit();
         if (!isPrimaryReady()) return;
         p.openInventory(p.getEnderChest());
-        p.sendActionBar(Component.text("Ender Chest opened!"));
+        AbilityDisplay.showPrimaryAbility(p, "Ender Chest", NamedTextColor.DARK_PURPLE);
+        BossBarManager.showCooldownBar(p, "Ender Chest", primaryCooldown, primaryCooldown);
         resetPrimaryCooldown();
     }
 
@@ -37,7 +58,8 @@ public class Shulk extends Origin {
                 le.addPotionEffect(new org.bukkit.potion.PotionEffect(org.bukkit.potion.PotionEffectType.LEVITATION, 60, 2, false, false));
             }
         }
-        p.sendActionBar(Component.text("Levitation cast!"));
+        AbilityDisplay.showSecondaryAbility(p, "Levitation", NamedTextColor.DARK_PURPLE);
+        BossBarManager.showCooldownBar(p, "Levitation", secondaryCooldown, secondaryCooldown);
         resetSecondaryCooldown();
     }
 

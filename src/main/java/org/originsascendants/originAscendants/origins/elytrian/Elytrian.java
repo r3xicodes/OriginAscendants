@@ -1,6 +1,8 @@
 package org.originsascendants.originAscendants.origins.elytrian;
 
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.bossbar.BossBar;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -9,6 +11,8 @@ import org.bukkit.util.Vector;
 import org.originsascendants.originAscendants.origins.base.Origin;
 import org.originsascendants.originAscendants.gui.AbilityDoc;
 import org.originsascendants.originAscendants.player.*;
+import org.originsascendants.originAscendants.util.AbilityDisplay;
+import org.originsascendants.originAscendants.util.BossBarManager;
 
 public class Elytrian extends Origin {
 
@@ -38,6 +42,20 @@ public class Elytrian extends Origin {
                 "Flap",
                 "Flap your wings for a minor boost in the sky. Hold to charge."
         );
+    }
+
+    @Override
+    public void applyAttributes() {
+        super.applyAttributes();
+        Player p = state.toBukkit();
+        setScale(p, 1.25);
+        setMaxHealth(p, 20.0);  // 10 hearts
+        setMovementSpeed(p, 0.090); // 90% speed
+        setAttackDamage(p, 1.0); // base attack damage
+        // Hollow Bones passive: Slow Falling
+        org.bukkit.potion.PotionEffect slowFalling = new org.bukkit.potion.PotionEffect(org.bukkit.potion.PotionEffectType.SLOW_FALLING, Integer.MAX_VALUE, 0, false, false);
+        appliedEffects.put("SLOW_FALLING", slowFalling);
+        p.addPotionEffect(slowFalling);
     }
 
 
@@ -83,7 +101,6 @@ public class Elytrian extends Origin {
     public void primaryAbility() {
         Player p = state.toBukkit();
         if (!isPrimaryReady()) {
-            p.sendActionBar(Component.text("Boost is on cooldown"));
             return;
         }
         if (p.isGliding()) { // If flying, boost in the look direction
@@ -94,6 +111,8 @@ public class Elytrian extends Origin {
             Vector upward = new Vector(0, boostAmount, 0);
             p.setVelocity(upward);
         }
+        AbilityDisplay.showPrimaryAbility(p, "Boost", NamedTextColor.YELLOW);
+        BossBarManager.showCooldownBar(p, "Boost", primaryCooldown, primaryCooldown);
         resetPrimaryCooldown();
     }
 
@@ -101,25 +120,25 @@ public class Elytrian extends Origin {
     public void secondaryAbility() {
         Player p = state.toBukkit();
         if (!isSecondaryReady()) {
-            p.sendActionBar(Component.text("Fold Wings is on cooldown"));
             return;
         }
         if (wingsFolded) {
             org.bukkit.inventory.ItemStack chest = p.getInventory().getChestplate();
             if (chest != null && chest.getType() != Material.AIR) {
-                p.sendActionBar(Component.text("Your armor restricts your wings..."));
                 return;
             } else {
                 p.getInventory().setChestplate(createWings());
                 wingsFolded = false;
+                AbilityDisplay.showSecondaryAbility(p, "Fold Wings", NamedTextColor.YELLOW);
+                BossBarManager.showCooldownBar(p, "Fold Wings", secondaryCooldown, secondaryCooldown);
                 resetSecondaryCooldown();
-                p.sendActionBar(Component.text("You unfold your wings."));
             }
         } else {
             p.getInventory().setChestplate(null);
-            resetSecondaryCooldown();
+            AbilityDisplay.showSecondaryAbility(p, "Fold Wings", NamedTextColor.YELLOW);
+            BossBarManager.showCooldownBar(p, "Fold Wings", secondaryCooldown, secondaryCooldown);
             wingsFolded = true;
-            p.sendActionBar(Component.text("You fold your wings."));
+            resetSecondaryCooldown();
         }
     }
 

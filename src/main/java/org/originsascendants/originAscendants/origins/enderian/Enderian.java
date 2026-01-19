@@ -1,11 +1,15 @@
 package org.originsascendants.originAscendants.origins.enderian;
 
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.bossbar.BossBar;
 import org.bukkit.entity.Player;
 import org.bukkit.util.RayTraceResult;
 import org.originsascendants.originAscendants.origins.base.Origin;
 import org.originsascendants.originAscendants.gui.AbilityDoc;
 import org.originsascendants.originAscendants.player.PlayerState;
+import org.originsascendants.originAscendants.util.AbilityDisplay;
+import org.originsascendants.originAscendants.util.BossBarManager;
 
 public class Enderian extends Origin {
 
@@ -19,16 +23,27 @@ public class Enderian extends Origin {
     }
 
     @Override
+    public void applyAttributes() {
+        super.applyAttributes();
+        Player p = state.toBukkit();
+        setScale(p, 1.50);
+        setMaxHealth(p, 20.0);  // 10 hearts
+        setMovementSpeed(p, 0.103); // 103% speed
+        setAttackDamage(p, 1.0); // base damage
+        setFallDamageMultiplier(p, 0.0);  // 0% fall damage - Enderians are immune to fall damage
+    }
+
+    @Override
     public void primaryAbility() {
         Player p = state.toBukkit();
         if (!isPrimaryReady()) {
-            p.sendActionBar(Component.text("Blink on cooldown"));
             return;
         }
         org.bukkit.Location target = p.getLocation().add(p.getLocation().getDirection().multiply(16));
         target.setY(p.getWorld().getHighestBlockYAt(target) + 1);
         p.teleport(target);
-        p.sendActionBar(Component.text("Blinked!"));
+        AbilityDisplay.showPrimaryAbility(p, "Blink", NamedTextColor.DARK_PURPLE);
+        BossBarManager.showCooldownBar(p, "Blink", primaryCooldown, primaryCooldown);
         resetPrimaryCooldown();
     }
 
@@ -36,14 +51,14 @@ public class Enderian extends Origin {
     public void secondaryAbility() {
         Player p = state.toBukkit();
         if (!isSecondaryReady()) {
-            p.sendActionBar(Component.text("Endport on cooldown"));
             return;
         }
         RayTraceResult result = p.getWorld().rayTraceBlocks(p.getEyeLocation(), p.getLocation().getDirection(), 128);
         if (result != null && result.getHitBlock() != null) {
             org.bukkit.Location target = result.getHitBlock().getLocation().add(0.5, 1, 0.5);
             p.teleport(target);
-            p.sendActionBar(Component.text("Endported!"));
+            AbilityDisplay.showSecondaryAbility(p, "Endport", NamedTextColor.DARK_PURPLE);
+            BossBarManager.showCooldownBar(p, "Endport", secondaryCooldown, secondaryCooldown);
             resetSecondaryCooldown();
         }
     }

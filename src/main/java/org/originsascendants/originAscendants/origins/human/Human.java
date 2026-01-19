@@ -1,10 +1,12 @@
 package org.originsascendants.originAscendants.origins.human;
 
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.entity.Player;
 import org.originsascendants.originAscendants.origins.base.Origin;
 import org.originsascendants.originAscendants.gui.AbilityDoc;
 import org.originsascendants.originAscendants.player.PlayerState;
+import org.originsascendants.originAscendants.util.AbilityDisplay;
 
 public class Human extends Origin{
     public Human(PlayerState state) {
@@ -23,7 +25,16 @@ public class Human extends Origin{
 
     private void abilityMessage() {
         Player p=state.toBukkit();
-        p.sendActionBar(Component.text("You have no ability lol"));
+        AbilityDisplay.showPrimaryAbility(p, "No Ability", NamedTextColor.GRAY);
+    }
+
+    @Override
+    public void applyAttributes() {
+        super.applyAttributes();
+        Player p = state.toBukkit();
+        setMaxHealth(p, 20.0);  // 10 hearts
+        setMovementSpeed(p, 0.100);  // 100% speed (normal)
+        setAttackDamage(p, 1.0);  // 100% melee multiplier (normal)
     }
 
     @Override
